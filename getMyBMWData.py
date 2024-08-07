@@ -7,6 +7,7 @@ from bimmer_connected.account import MyBMWAccount
 from bimmer_connected.api.regions import Regions
 from bimmer_connected.vehicle.vehicle import VehicleViewDirection
 from bimmer_connected.vehicle.doors_windows import LockState
+import pickle
 
 async def main(email, password, vin, region):
     if (region == 'cn'):
@@ -16,7 +17,11 @@ async def main(email, password, vin, region):
     else:
         region = Regions.REST_OF_WORLD
 
-    account = MyBMWAccount(email, password, region)
+    try:
+        account = pickle.load(open('modules/MMM-MyBMW/account.p', 'rb'))
+    except:
+        account = MyBMWAccount(email, password, region)
+        pickle.dump(account, open('modules/MMM-MyBMW/account.p', 'wb'))
     await account.get_vehicles()
     vehicle = account.get_vehicle(vin)
 
