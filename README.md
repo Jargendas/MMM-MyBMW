@@ -69,7 +69,7 @@ The module has a few configuration options:
     </tr>
     <tr>
       <td><code>hCaptchaToken</code></td>
-      <td>An hCaptcha token for authentication, required on first startup. Can be generated [here](https://bimmer-connected.readthedocs.io/en/stable/captcha/north_america.html) for North America or [here](https://bimmer-connected.readthedocs.io/en/stable/captcha/rest_of_world.html) for the rest of the world.<br /><br /><strong>Default: </strong><code>''</code></td>
+      <td>An hCaptcha token for authentication, required on first startup. Can be generated <a href="https://bimmer-connected.readthedocs.io/en/stable/captcha/north_america.html">here</a> for North America or <a href="https://bimmer-connected.readthedocs.io/en/stable/captcha/rest_of_world.html">here</a> for the rest of the world.<br /><br /><strong>Default: </strong><code>''</code></td>
     </tr>
     <tr>
       <td><code>region</code></td>
@@ -116,5 +116,5 @@ The module has a few configuration options:
 
 ## Changelog
 
-**2024-03-12** Forked from MMM-BMWConnected and migrated to MyBMW via bimmer_connected.
+**2024-03-12** Forked from MMM-BMWConnected and migrated to MyBMW via bimmer_connected.<br />
 **2024-12-30** Implemented hCaptcha handling which is now required for bimmer_connected operation.
