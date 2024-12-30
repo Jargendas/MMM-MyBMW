@@ -77,35 +77,39 @@ The module has a few configuration options:
     </tr>
     <tr>
       <td><code>refresh</code></td>
-      <td>How often to refresh the data in minutes. <br /> <br />Be careful: BMW limits the amount of calls per account per day (to ~200 ?), so don't set this value too low.<br /><br /><strong>Default: </strong><code>15</code> </td>
+      <td>How often to refresh the data in minutes. <br /> <br />Be careful: BMW limits the amount of calls per account per day (to ~200 ?), so don't set this value too low.<br /><br /><strong>Default: </strong><code>15</code></td>
     </tr>
     <tr>
       <td><code>vehicleOpacity</code></td>
-      <td>The opacity of the car image. <br /><br /><strong>Default: </strong><code>0.75</code><br/>Between 0 and 1.</td>
+      <td>The opacity of the car image. Between 0 and 1.<br /><br /><strong>Default: </strong><code>0.75</code></td>
+    </tr>
+    <tr>
+      <td><code>useUSUnits</code></td>
+      <td>If true, miles instead of kilometres are shown for all range values. <br /><br /><strong>Default: </strong><code>false</code></td>
     </tr>
     <tr>
       <td><code>showMileage</code></td>
-      <td>Whether to show the mileage. <br /><br /><strong>Default: </strong><code>true</code>
+      <td>Whether to show the mileage. <br /><br /><strong>Default: </strong><code>true</code></td>
     </tr>
     <tr>
       <td><code>showElectricRange</code></td>
-      <td>Whether to show the electric range. Will be hidden automatically if electric range is zero (i.e. when car is not electric).<br /><br /><strong>Default: </strong><code>true</code>
+      <td>Whether to show the electric range. Will be hidden automatically if electric range is zero (i.e. when car is not electric).<br /><br /><strong>Default: </strong><code>true</code></td>
     </tr>
     <tr>
       <td><code>showElectricPercentage</code></td>
-      <td>Whether to show the battery charging also in percentages. Will be hidden automatically if electric range is zero (i.e. when car is not electric).<br /><br /><strong>Default: </strong><code>true</code>
+      <td>Whether to show the battery charging also in percentages. Will be hidden automatically if electric range is zero (i.e. when car is not electric).<br /><br /><strong>Default: </strong><code>true</code></td>
     </tr>
     <tr>
       <td><code>showFuelRange</code></td>
-      <td>Whether to show the fuel range. Will be hidden automatically if fuel range is zero (i.e. when car is  electric). <br /><br /><strong>Default: </strong><code>true</code>
+      <td>Whether to show the fuel range. Will be hidden automatically if fuel range is zero (i.e. when car is  electric). <br /><br /><strong>Default: </strong><code>true</code></td>
     </tr>
     <tr>
       <td><code>showLastUpdated</code></td>
-      <td>Whether to show the info when the data was last updated. <br /><br /><strong>Default: </strong><code>true</code>
+      <td>Whether to show the info when the data was last updated. <br /><br /><strong>Default: </strong><code>true</code></td>
     </tr>
     <tr>
       <td><code>lastUpdatedText</code></td>
-      <td>The text to be shown before the last updated timestamp. <br /><br /><strong>Default: </strong><code>last updated</code>
+      <td>The text to be shown before the last updated timestamp. <br /><br /><strong>Default: </strong><code>last updated</code></td>
     </tr>
     <tr>
       <td><code>authStorePath</code></td>
