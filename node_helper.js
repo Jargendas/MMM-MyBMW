@@ -13,15 +13,15 @@ module.exports = NodeHelper.create({
 
     var self = this;
     var vin = payload.vin;
-      
+
     if (notification == "MMM-MYBMW-CONFIG") {
       self.config[vin] = payload;
       self.bmwInfo[vin] = null;
     } else if (notification == "MMM-MYBMW-GET") {
-      const config = self.config[vin];  
+      const config = self.config[vin];
 
-      const pythonProcess = spawn('python3',["modules/MMM-MyBMW/getMyBMWData.py", config.email, config.password, config.vin, config.region]);
-      
+      const pythonProcess = spawn('python3',["modules/MMM-MyBMW/getMyBMWData.py", config.email, config.password, config.vin, config.region, config.hCaptchaToken, config.authStorePath]);
+
       pythonProcess.stdout.on('data', (data) => {
         self.bmwInfo[vin] = JSON.parse(data);
         self.sendResponse(payload);

@@ -1,6 +1,8 @@
 
 Module.register("MMM-MyBMW", {
   defaults: {
+    hCaptchaToken: '',
+    authStorePath: 'mybmw_auth.json',
     region: 'rest',
     refresh: 15,
     vehicleOpacity: 0.75,
@@ -33,7 +35,7 @@ Module.register("MMM-MyBMW", {
     this.timer = null;
     this.sendSocketNotification("MMM-MYBMW-GET", {
 	    instanceId: this.identifier,
-	    vin: this.config.vin	
+	    vin: this.config.vin
     });
 
     var self = this;

@@ -29,6 +29,8 @@ Go to the MagicMirror/config directory and edit the config.js file. Add the modu
 
 You'll need your MyBMW email and password, and your car's VIN number.
 
+Additionally, an hCaptcha token is required on first startup. The session data will be saved afterwards, so it should only be required once. You can generate this token [here](https://bimmer-connected.readthedocs.io/en/stable/captcha/north_america.html) for North America or [here](https://bimmer-connected.readthedocs.io/en/stable/captcha/rest_of_world.html) for the rest of the world.
+
 Enter these details in the config.js for your MagicMirror installation:
 
         {
@@ -37,7 +39,8 @@ Enter these details in the config.js for your MagicMirror installation:
             config: {
                 email: "email@example.com",
                 password: "myComplexPassword",
-                vin: "XXXXXXXXXXXXXXXXX"
+                vin: "XXXXXXXXXXXXXXXXX",
+                hCaptchaToken: "<token>",
             }
         },
 
@@ -63,6 +66,10 @@ The module has a few configuration options:
     <tr>
       <td><code>vin</code></td>
       <td>Your car's VIN code, required.<br /><br /><strong>Default: </strong><code>undefined</code></td>
+    </tr>
+    <tr>
+      <td><code>hCaptchaToken</code></td>
+      <td>An hCaptcha token for authentication, required on first startup. Can be generated [here](https://bimmer-connected.readthedocs.io/en/stable/captcha/north_america.html) for North America or [here](https://bimmer-connected.readthedocs.io/en/stable/captcha/rest_of_world.html) for the rest of the world.<br /><br /><strong>Default: </strong><code>''</code></td>
     </tr>
     <tr>
       <td><code>region</code></td>
@@ -100,9 +107,14 @@ The module has a few configuration options:
       <td><code>lastUpdatedText</code></td>
       <td>The text to be shown before the last updated timestamp. <br /><br /><strong>Default: </strong><code>last updated</code>
     </tr>
+    <tr>
+      <td><code>authStorePath</code></td>
+      <td>Path to store the auth data to for future access without a new hCaptcha token. <br /><br /><strong>Default: </strong><code>mybmw_auth.json</code></td>
+    </tr>
   </tbody>
 </table>
 
 ## Changelog
 
 **2024-03-12** Forked from MMM-BMWConnected and migrated to MyBMW via bimmer_connected.
+**2024-12-30** Implemented hCaptcha handling which is now required for bimmer_connected operation.

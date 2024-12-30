@@ -62,3 +62,6 @@ typings/
 
 # car renders
 car*.png
+
+# auth data
+*.json
