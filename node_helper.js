@@ -7,28 +7,37 @@ module.exports = NodeHelper.create({
     console.log("Starting node_helper for module: " + this.name);
     this.bmwInfo = {};
     this.config = {};
+    this.resourceLocked = false;
   },
 
-  socketNotificationReceived: function (notification, payload) {
+  socketNotificationReceived: async function (notification, payload) {
 
     var self = this;
     var vin = payload.vin;
-      
+
     if (notification == "MMM-MYBMW-CONFIG") {
       self.config[vin] = payload;
       self.bmwInfo[vin] = null;
     } else if (notification == "MMM-MYBMW-GET") {
-      const config = self.config[vin];  
+      const config = self.config[vin];
 
-      const pythonProcess = spawn('python3',["modules/MMM-MyBMW/getMyBMWData.py", config.email, config.password, config.vin, config.region]);
-      
+      while (self.resourceLocked) {
+        console.log('Resource is locked, waiting...');
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+        await delay(10000);
+      }
+      self.resourceLocked = true;
+      const pythonProcess = spawn('python3',["modules/MMM-MyBMW/getMyBMWData.py", config.email, config.password, config.vin, config.region, config.hCaptchaToken, config.authStorePath]);
+
       pythonProcess.stdout.on('data', (data) => {
         self.bmwInfo[vin] = JSON.parse(data);
         self.sendResponse(payload);
+        self.resourceLocked = false;
       });
 
       pythonProcess.stderr.on('data', (data) => {
         console.error(`bimmer_connected error: ${data}`);
+        self.resourceLocked = false;
       });
 
     }
