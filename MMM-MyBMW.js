@@ -28,21 +28,16 @@ Module.register("MMM-MyBMW", {
     this.sendSocketNotification("MMM-MYBMW-CONFIG", this.config);
     this.bmwInfo = {};
     this.getInfo();
-    this.timer = null;
+    self = this;
+    this.updateTimer = setInterval(function(){self.getInfo()}, this.config.refresh * 60 * 1000);
+    this.refreshTimer = setInterval(function(){self.updateDom(0)}, 30000); // Update DOM more often for "last updated" field to refresh.
   },
 
   getInfo: function () {
-    clearTimeout(this.timer);
-    this.timer = null;
     this.sendSocketNotification("MMM-MYBMW-GET", {
 	    instanceId: this.identifier,
 	    vin: this.config.vin
     });
-
-    var self = this;
-    this.timer = setTimeout(function () {
-      self.getInfo();
-    }, this.config.refresh * 60 * 1000);
   },
 
   socketNotificationReceived: function (notification, payload) {
@@ -71,7 +66,7 @@ Module.register("MMM-MyBMW", {
     var wrapper = document.createElement("div");
 	  wrapper.classList.add("bmw-wrapper");
 
-    if (this.config.email === "" || this.config.password === "") {
+    if (this.config.email === "" || this.config.password === "" || this.config.vin === "") {
       wrapper.innerHTML = "Missing configuration.";
       return wrapper;
     }
@@ -104,39 +99,43 @@ Module.register("MMM-MyBMW", {
 
     carContainer = document.createElement("div");
     carContainer.classList.add("bmw-container");
+
     var battery = document.createElement("span");
     battery.classList.add("battery");
     
-    var plugged = document.createElement("span");
-    plugged.classList.add("plugged");
-    if (info.connectorStatus) {
-      plugged.appendChild(this.faIconFactory("fa-bolt"));
-    } else {
-      //plugged.appendChild(this.faIconFactory("fa-plug"));
-      plugged.appendChild(document.createTextNode("\u00a0"));
-    }
-    battery.appendChild(plugged);
-
-    switch (true) {
-      case (info.chargingLevelHv < 25):
-        battery.appendChild(this.faIconFactory("fa-battery-empty"));
-        break;
-      case (info.chargingLevelHv < 50):
-        battery.appendChild(this.faIconFactory("fa-battery-quarter"));
-        break;
-      case (info.chargingLevelHv < 75):
-        battery.appendChild(this.faIconFactory("fa-battery-half"));
-        break;
-      case (info.chargingLevelHv < 100):
-        battery.appendChild(this.faIconFactory("fa-battery-three-quarters"));
-        break;
-      default:
-        battery.appendChild(this.faIconFactory("fa-battery-full"));
-        break;
-    }
-
     if (this.config.showElectricPercentage  && (info.electricRange != '')) {
+      var plugged = document.createElement("span");
+      plugged.classList.add("plugged");
+
+      if (info.connectorStatus) {
+        plugged.appendChild(this.faIconFactory("fa-bolt"));
+      } else {
+        //plugged.appendChild(this.faIconFactory("fa-plug"));
+        plugged.appendChild(document.createTextNode("\u00a0"));
+      }
+      battery.appendChild(plugged);
+
+      switch (true) {
+        case (info.chargingLevelHv < 25):
+          battery.appendChild(this.faIconFactory("fa-battery-empty"));
+          break;
+        case (info.chargingLevelHv < 50):
+          battery.appendChild(this.faIconFactory("fa-battery-quarter"));
+          break;
+        case (info.chargingLevelHv < 75):
+          battery.appendChild(this.faIconFactory("fa-battery-half"));
+          break;
+        case (info.chargingLevelHv < 100):
+          battery.appendChild(this.faIconFactory("fa-battery-three-quarters"));
+          break;
+        default:
+          battery.appendChild(this.faIconFactory("fa-battery-full"));
+          break;
+      }
+
       battery.appendChild(document.createTextNode(info.chargingLevelHv + " %"));
+    } else {
+      battery.appendChild(document.createTextNode("⠀")); // For spacing
     }
     carContainer.appendChild(battery);
     wrapper.appendChild(carContainer);
@@ -185,7 +184,7 @@ Module.register("MMM-MyBMW", {
     
     var fuelRange = document.createElement("span");
     fuelRange.classList.add("fuelRange");
-    if (this.config.showFuelRange && (info.fuelRange != '')) {
+    if ((this.config.showFuelRange) && (info.fuelRange != '')) {
       fuelRange.appendChild(this.faIconFactory("fa-gas-pump"));
       fuelRange.appendChild(document.createTextNode(info.fuelRange + (this.config.useUSUnits ? ' mi' : ' km')));
     } else {
@@ -203,9 +202,6 @@ Module.register("MMM-MyBMW", {
     if (this.config.showLastUpdated) {
       updated.appendChild(this.faIconFactory("fa-info"));
       var lastUpdateText = this.config.lastUpdatedText + " " + moment(info.updateTime).fromNow();
-      if (this.config.debug) {
-        lastUpdateText += " [" + info.unitOfLength + "]";
-      }
     } else {
       lastUpdateText = "";
     }

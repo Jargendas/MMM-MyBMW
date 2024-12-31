@@ -19,10 +19,11 @@ module.exports = NodeHelper.create({
       self.config[vin] = payload;
       self.bmwInfo[vin] = null;
     } else if (notification == "MMM-MYBMW-GET") {
+      console.log('MMM-MyBMW: Updating data for ' + vin);
       const config = self.config[vin];
 
       while (self.resourceLocked) {
-        console.log('Resource is locked, waiting...');
+        console.log('MMM-MyBMW: Resource is locked, waiting...');
         const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
         await delay(10000);
       }
@@ -40,6 +41,7 @@ module.exports = NodeHelper.create({
         self.resourceLocked = false;
       });
 
+      setTimeout(function(){self.resourceLocked = false;}, 20000);
     }
   },
 
