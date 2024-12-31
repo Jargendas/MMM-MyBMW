@@ -59,7 +59,6 @@ async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_st
 
     account = MyBMWAccount(email, password, region, hcaptcha_token=hcaptcha_token)
     oauth_store_data = load_oauth_store_from_file(Path(oauth_store_path), account)
-    store_oauth_store_to_file(Path(oauth_store_path), account, oauth_store_data.get("session_id_timestamp"))
 
     await account.get_vehicles()
     vehicle = account.get_vehicle(vin)
@@ -88,6 +87,8 @@ async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_st
 
     print(json.dumps(data))
     sys.stdout.flush()
+
+    store_oauth_store_to_file(Path(oauth_store_path), account, oauth_store_data.get("session_id_timestamp"))
 
 region = 'rest'
 hcaptcha_token = None
