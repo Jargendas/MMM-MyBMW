@@ -49,7 +49,7 @@ def store_oauth_store_to_file(
         ),
     )
 
-async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_store_path='mybmw_auth.json'):
+async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_store_path='modules/MMM-MyBMW/mybmw_auth.json'):
     if (region == 'cn'):
         region = Regions.CHINA
     elif (region == 'us'):
@@ -92,7 +92,7 @@ async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_st
 
 region = 'rest'
 hcaptcha_token = None
-oauth_store_path = 'mybmw_auth.json'
+oauth_store_path = 'modules/MMM-MyBMW/mybmw_auth.json'
 if (len(sys.argv) > 4):
     region = sys.argv[4]
 if (len(sys.argv) > 5):

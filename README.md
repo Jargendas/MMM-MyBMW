@@ -109,7 +109,7 @@ The module has a few configuration options:
     </tr>
     <tr>
       <td><code>authStorePath</code></td>
-      <td>Path to store the auth data to for future access without a new hCaptcha token. <br /><br /><strong>Default: </strong><code>mybmw_auth.json</code></td>
+      <td>Path to store the auth data to for future access without a new hCaptcha token. <br /><br /><strong>Default: </strong><code>modules/MMM-MyBMW/mybmw_auth.json</code></td>
     </tr>
   </tbody>
 </table>

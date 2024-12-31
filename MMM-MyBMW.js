@@ -2,7 +2,7 @@
 Module.register("MMM-MyBMW", {
   defaults: {
     hCaptchaToken: '',
-    authStorePath: 'mybmw_auth.json',
+    authStorePath: 'modules/MMM-MyBMW/mybmw_auth.json',
     region: 'rest',
     refresh: 15,
     vehicleOpacity: 0.75,
