@@ -75,10 +75,10 @@ async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_st
 
     data = {
         'updateTime': vehicle.vehicle_location.vehicle_update_timestamp.isoformat(),
-        'mileage': f'{vehicle.mileage.value} {vehicle.mileage.unit}',
+        'mileage': vehicle.mileage.value,
         'doorLock': (vehicle.doors_and_windows.door_lock_state == LockState.LOCKED) or (vehicle.doors_and_windows.door_lock_state == LockState.SECURED),
-        'fuelRange': f'{vehicle.fuel_and_battery.remaining_range_fuel.value} {vehicle.fuel_and_battery.remaining_range_fuel.unit}' if (vehicle.fuel_and_battery.remaining_range_fuel.value != None) else '',
-        'electricRange': f'{vehicle.fuel_and_battery.remaining_range_electric.value} {vehicle.fuel_and_battery.remaining_range_electric.unit}' if (vehicle.fuel_and_battery.remaining_range_electric.value != None) else '',
+        'fuelRange': vehicle.fuel_and_battery.remaining_range_fuel.value if (vehicle.fuel_and_battery.remaining_range_fuel.value != None) else '',
+        'electricRange': vehicle.fuel_and_battery.remaining_range_electric.value if (vehicle.fuel_and_battery.remaining_range_electric.value != None) else '',
         'chargingLevelHv': vehicle.fuel_and_battery.remaining_battery_percent,
         'connectorStatus': vehicle.fuel_and_battery.is_charger_connected,
         'vin': vehicle.vin,
