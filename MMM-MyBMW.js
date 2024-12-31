@@ -52,9 +52,9 @@ Module.register("MMM-MyBMW", {
     ) {
       this.bmwInfo = payload;
       if (this.config.useUSUnits) {
-          this.bmwInfo.mileage /= 1.60934;
-          this.bmwInfo.electricRange /= 1.60934;
-          this.bmwInfo.fuelRange /= 1.60934;
+          this.bmwInfo.mileage = Math.round(this.bmwInfo.mileage/1.60934);
+          this.bmwInfo.electricRange = Math.round(this.bmwInfo.electricRange/1.60934);
+          this.bmwInfo.fuelRange = Math.round(this.bmwInfo.fuelRange/1.60934);
       }
       this.updateDom(1000);
     }
@@ -145,7 +145,7 @@ Module.register("MMM-MyBMW", {
     mileage.classList.add("mileage");
     if (this.config.showMileage) {
       mileage.appendChild(this.faIconFactory("fa-road"));
-      mileage.appendChild(document.createTextNode(info.mileage + (this.config.useUSUnits ? ' km' : ' mi')));
+      mileage.appendChild(document.createTextNode(info.mileage + (this.config.useUSUnits ? ' mi' : ' km')));
     } else {
       mileage.appendChild(document.createTextNode("\u00a0"));
     }
@@ -159,7 +159,7 @@ Module.register("MMM-MyBMW", {
     elecRange.classList.add("elecRange");
     if (this.config.showElectricRange && (info.electricRange != '')) {
       elecRange.appendChild(this.faIconFactory("fa-charging-station"));
-      elecRange.appendChild(document.createTextNode(info.electricRange + (this.config.useUSUnits ? ' km' : ' mi')));
+      elecRange.appendChild(document.createTextNode(info.electricRange + (this.config.useUSUnits ? ' mi' : ' km')));
     } else {
       elecRange.appendChild(document.createTextNode("\u00a0"));
     }
@@ -187,7 +187,7 @@ Module.register("MMM-MyBMW", {
     fuelRange.classList.add("fuelRange");
     if (this.config.showFuelRange && (info.fuelRange != '')) {
       fuelRange.appendChild(this.faIconFactory("fa-gas-pump"));
-      fuelRange.appendChild(document.createTextNode(info.fuelRange + (this.config.useUSUnits ? ' km' : ' mi')));
+      fuelRange.appendChild(document.createTextNode(info.fuelRange + (this.config.useUSUnits ? ' mi' : ' km')));
     } else {
       fuelRange.appendChild(document.createTextNode("\u00a0"));
     }

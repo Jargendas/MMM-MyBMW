@@ -121,4 +121,5 @@ The module has a few configuration options:
 ## Changelog
 
 **2024-03-12** Forked from MMM-BMWConnected and migrated to MyBMW via bimmer_connected.<br />
-**2024-12-30** Implemented hCaptcha handling which is now required for bimmer_connected operation.
+**2024-12-30** Implemented hCaptcha handling which is now required for bimmer_connected operation.<br />
+**2024-12-31** Added US unit mode, which is not handled by bimmer connected anymore
