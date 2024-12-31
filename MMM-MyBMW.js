@@ -103,10 +103,10 @@ Module.register("MMM-MyBMW", {
     var battery = document.createElement("span");
     battery.classList.add("battery");
     
-    var plugged = document.createElement("span");
-    plugged.classList.add("plugged");
-
     if (this.config.showElectricPercentage  && (info.electricRange != '')) {
+      var plugged = document.createElement("span");
+      plugged.classList.add("plugged");
+
       if (info.connectorStatus) {
         plugged.appendChild(this.faIconFactory("fa-bolt"));
       } else {
@@ -134,6 +134,8 @@ Module.register("MMM-MyBMW", {
       }
 
       battery.appendChild(document.createTextNode(info.chargingLevelHv + " %"));
+    } else {
+      battery.appendChild(document.createTextNode("⠀")); // For spacing
     }
     carContainer.appendChild(battery);
     wrapper.appendChild(carContainer);
@@ -182,7 +184,7 @@ Module.register("MMM-MyBMW", {
     
     var fuelRange = document.createElement("span");
     fuelRange.classList.add("fuelRange");
-    if (this.config.showFuelRange && (info.fuelRange != '')) {
+    if ((this.config.showFuelRange) && (info.fuelRange != '')) {
       fuelRange.appendChild(this.faIconFactory("fa-gas-pump"));
       fuelRange.appendChild(document.createTextNode(info.fuelRange + (this.config.useUSUnits ? ' mi' : ' km')));
     } else {
