@@ -10,6 +10,7 @@ from bimmer_connected.account import MyBMWAccount
 from bimmer_connected.api.regions import Regions
 from bimmer_connected.vehicle.vehicle import VehicleViewDirection
 from bimmer_connected.vehicle.doors_windows import LockState
+from bimmer_connected.models import MyBMWAPIError, MyBMWAuthError, MyBMWCaptchaMissingError
 
 # Load and store functions from bimmer_connected cli
 def load_oauth_store_from_file(oauth_store: Path, account: MyBMWAccount) -> Dict:
@@ -21,35 +22,33 @@ def load_oauth_store_from_file(oauth_store: Path, account: MyBMWAccount) -> Dict
     except json.JSONDecodeError:
         return {}
 
-    session_id_timestamp = oauth_data.pop("session_id_timestamp", None)
-    # Pop session_id every 14 days so it gets recreated
-    if (time.time() - (session_id_timestamp or 0)) > 14 * 24 * 60 * 60:
-        oauth_data.pop("session_id", None)
-        session_id_timestamp = None
+    account.set_refresh_token(refresh_token=oauth_data["refresh_token"], gcid=oauth_data["gcid"])
 
-    account.set_refresh_token(**oauth_data)
-
-    return {**oauth_data, "session_id_timestamp": session_id_timestamp}
+    return oauth_data
 
 
-def store_oauth_store_to_file(
-    oauth_store: Path, account: MyBMWAccount, session_id_timestamp: Optional[float] = None
-) -> None:
+def store_oauth_store_to_file(oauth_store: Path, account: MyBMWAccount, session_id_timestamp: Optional[float] = None) -> None:
     """Store the OAuth details to a file."""
-    oauth_store.parent.mkdir(parents=True, exist_ok=True)
-    oauth_store.write_text(
-        json.dumps(
-            {
+    oauth_store.parent.mkdir(parents=True, exist_ok=True)    
+    if (oauth_store.exists()): # Just update the refresh token
+        try:
+            oauth_data = json.loads(oauth_store.read_text())
+        except json.JSONDecodeError:
+            pass
+        oauth_data["refresh_token"] = account.config.authentication.refresh_token
+    else: # Create a new store
+        oauth_data = {
                 "refresh_token": account.config.authentication.refresh_token,
-                "gcid": account.config.authentication.gcid,
-                "access_token": account.config.authentication.access_token,
-                "session_id": account.config.authentication.session_id,
-                "session_id_timestamp": session_id_timestamp or time.time(),
+                "gcid": account.config.authentication.gcid
             }
-        ),
-    )
 
-async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_store_path='modules/MMM-MyBMW/mybmw_auth.json'):
+    oauth_store.write_text(json.dumps(oauth_data))
+
+def delete_oauth_store(oauth_store: Path) -> None:
+    """Delete the OAuth details."""
+    oauth_store.unlink(missing_ok=True)
+
+async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_store_path='modules/MMM-MyBMW/mybmw_auth.json', reset_on_auth_error=False):
     if (region == 'cn'):
         region = Regions.CHINA
     elif (region == 'us'):
@@ -60,7 +59,23 @@ async def main(email, password, vin, region='row', hcaptcha_token=None, oauth_st
     account = MyBMWAccount(email, password, region, hcaptcha_token=hcaptcha_token)
     oauth_store_data = load_oauth_store_from_file(Path(oauth_store_path), account)
 
-    await account.get_vehicles()
+    try:
+        await account.get_vehicles()
+    except MyBMWCaptchaMissingError as ex:
+        print(json.dumps({'error': 'Missing captcha'}))
+        sys.stdout.flush()
+        return
+    except MyBMWAuthError as ex:
+        print(json.dumps({'error': 'Authentication error'}))
+        sys.stdout.flush()
+        if (reset_on_auth_error):
+            delete_oauth_store(Path(oauth_store_path))
+        return
+    except (MyBMWAPIError, RequestError) as ex:
+        print(json.dumps({'error': 'Connection error!'}))
+        sys.stdout.flush()
+        return
+
     vehicle = account.get_vehicle(vin)
 
     filename = 'modules/MMM-MyBMW/car-' + vin + '.png'
@@ -99,7 +114,9 @@ if (len(sys.argv) > 5):
     hcaptcha_token = sys.argv[5]
 if (len(sys.argv) > 6):
     oauth_store_path = sys.argv[6]
+if (len(sys.argv) > 7):
+    reset_on_auth_error = sys.argv[7]
 if (len(sys.argv) < 4):
-    print('Usage: python getMyBMWData.py <email> <password> <vin> <region:us|cn|rest (Optional)> <hCaptcha Token (Optional)> <OAuth2 Session Store Path (Optional)>')
+    print('Usage: python getMyBMWData.py <email> <password> <vin> <region:us|cn|rest (Optional)> <hCaptcha Token (Optional)> <OAuth2 Session Store Path (Optional)> <Delete oauth store on error:0|1 (Optional)>')
 else:
-    asyncio.run(main(sys.argv[1], sys.argv[2], sys.argv[3], region, hcaptcha_token, oauth_store_path))
+    asyncio.run(main(sys.argv[1], sys.argv[2], sys.argv[3], region, hcaptcha_token, oauth_store_path, reset_on_auth_error))
