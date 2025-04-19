@@ -8,6 +8,7 @@ module.exports = NodeHelper.create({
     this.bmwInfo = {};
     this.config = {};
     this.resourceLocked = false;
+    this.hadError = false;
   },
 
   socketNotificationReceived: async function (notification, payload) {
@@ -28,16 +29,24 @@ module.exports = NodeHelper.create({
         await delay(10000);
       }
       self.resourceLocked = true;
-      const pythonProcess = spawn('python3',["modules/MMM-MyBMW/getMyBMWData.py", config.email, config.password, config.vin, config.region, config.hCaptchaToken, config.authStorePath]);
+      const pythonProcess = spawn('python3',["modules/MMM-MyBMW/getMyBMWData.py", config.email, config.password, config.vin, config.region, config.hCaptchaToken, config.authStorePath, self.hadError]);
 
       pythonProcess.stdout.on('data', (data) => {
         self.bmwInfo[vin] = JSON.parse(data);
+        if (self.hasOwnProperty('error')) {
+          self.hadError = true;
+        } else {
+          self.hadError = false;
+        }
         self.sendResponse(payload);
         self.resourceLocked = false;
       });
 
       pythonProcess.stderr.on('data', (data) => {
         console.error(`bimmer_connected error: ${data}`);
+        self.bmwInfo[payload.vin] = {'error': 'API connection error!'};
+        self.hadError = true;
+        self.sendResponse(payload);
         self.resourceLocked = false;
       });
 

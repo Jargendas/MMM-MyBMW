@@ -1,4 +1,6 @@
 
+const kmPerMile = 1.60934;
+
 Module.register("MMM-MyBMW", {
   defaults: {
     hCaptchaToken: '',
@@ -25,6 +27,7 @@ Module.register("MMM-MyBMW", {
 
   start: function () {
     Log.info("Starting module: " + this.name);
+    this.hadError = false;
     this.sendSocketNotification("MMM-MYBMW-CONFIG", this.config);
     this.bmwInfo = {};
     this.getInfo();
@@ -46,10 +49,17 @@ Module.register("MMM-MyBMW", {
       Object.keys(payload).length > 0
     ) {
       this.bmwInfo = payload;
+      if (!!payload.error) {
+        if (this.hadError) {
+          clearInterval(this.updateTimer);
+        } else {
+          this.hadError = true;
+        }
+      }
       if (this.config.useUSUnits) {
-          this.bmwInfo.mileage = Math.round(this.bmwInfo.mileage/1.60934);
-          this.bmwInfo.electricRange = Math.round(this.bmwInfo.electricRange/1.60934);
-          this.bmwInfo.fuelRange = Math.round(this.bmwInfo.fuelRange/1.60934);
+          this.bmwInfo.mileage = Math.round(this.bmwInfo.mileage/kmPerMile);
+          this.bmwInfo.electricRange = Math.round(this.bmwInfo.electricRange/kmPerMile);
+          this.bmwInfo.fuelRange = Math.round(this.bmwInfo.fuelRange/kmPerMile);
       }
       this.updateDom(1000);
     }
@@ -78,7 +88,7 @@ Module.register("MMM-MyBMW", {
     }
 
     if (!!this.bmwInfo.error) {
-	  wrapper.innerHTML = this.bmwInfo.error;
+	    wrapper.innerHTML = this.bmwInfo.error;
       wrapper.className = "dimmed light small";
       return wrapper;
     }
