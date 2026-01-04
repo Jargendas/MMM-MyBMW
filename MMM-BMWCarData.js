@@ -1,22 +1,21 @@
-
-Module.register("MMM-MyBMW", {
+ 
+Module.register("MMM-BMWCarData", {
   defaults: {
-    hCaptchaToken: '',
-    authStorePath: 'modules/MMM-MyBMW/mybmw_auth.json',
-    region: 'rest',
-    refresh: 15,
+    refresh: 60,
     vehicleOpacity: 0.75,
     useUSUnits: false,
     showMileage: true,
     showElectricPercentage: true,
     showElectricRange: true,
     showFuelRange: true,
+    fuelRangeWarning: 100,
+    fuelRangeCritical: 50,
     showLastUpdated: true,
     lastUpdatedText: "last updated"
   },
 
   getStyles: function () {
-    return ["MMM-MyBMW.css"];
+    return ["MMM-BMWCarData.css"];
   },
 
   getScripts: function () {
@@ -25,7 +24,7 @@ Module.register("MMM-MyBMW", {
 
   start: function () {
     Log.info("Starting module: " + this.name);
-    this.sendSocketNotification("MMM-MYBMW-CONFIG", this.config);
+    this.sendSocketNotification("MMM-BMWCARDATA-CONFIG", this.config);
     this.bmwInfo = {};
     this.getInfo();
     self = this;
@@ -34,7 +33,7 @@ Module.register("MMM-MyBMW", {
   },
 
   getInfo: function () {
-    this.sendSocketNotification("MMM-MYBMW-GET", {
+    this.sendSocketNotification("MMM-BMWCARDATA-GET", {
 	    instanceId: this.identifier,
 	    vin: this.config.vin
     });
@@ -42,7 +41,7 @@ Module.register("MMM-MyBMW", {
 
   socketNotificationReceived: function (notification, payload) {
     if (
-      notification === "MMM-MYBMW-RESPONSE" + this.identifier &&
+      notification === "MMM-BMWCARDATA-RESPONSE" + this.identifier &&
       Object.keys(payload).length > 0
     ) {
       this.bmwInfo = payload;
@@ -51,14 +50,28 @@ Module.register("MMM-MyBMW", {
           this.bmwInfo.electricRange = Math.round(this.bmwInfo.electricRange/1.60934);
           this.bmwInfo.fuelRange = Math.round(this.bmwInfo.fuelRange/1.60934);
       }
+      this.error=null;
       this.updateDom(1000);
+    }
+    if (notification === "MMM-BMWCARDATA-ERROR") {
+      if (Object.keys(payload).length > 0) {        
+        this.error = payload;
+        this.updateDom(1000);
+        setTimeout(() => {this.error=null;this.updateDom(1000);}, 5*60*1000) // errors get cleared automatically after 5 minutes, or when regular data is received
+      } else {
+        this.error = 'clearing error';
+        this.updateDom(1000);
+        setTimeout(() => {this.error=null;this.updateDom(1000);}, 1000) 
+      }
     }
   },
 
-  faIconFactory: function (icon) {
+  faIconFactory: function (icon, color) {
     var faIcon = document.createElement("i");
     faIcon.classList.add("fas");
     faIcon.classList.add(icon);
+    if(color)
+      faIcon.style.color=color;
     return faIcon;
   },
 
@@ -66,8 +79,14 @@ Module.register("MMM-MyBMW", {
     var wrapper = document.createElement("div");
 	  wrapper.classList.add("bmw-wrapper");
 
-    if (this.config.email === "" || this.config.password === "" || this.config.vin === "") {
+    if (this.config.vin === "") {
       wrapper.innerHTML = "Missing configuration.";
+      return wrapper;
+    }
+
+    if (!!this.error) {
+      wrapper.innerHTML = this.error;
+      wrapper.className = "bright light small";
       return wrapper;
     }
 
@@ -185,7 +204,13 @@ Module.register("MMM-MyBMW", {
     var fuelRange = document.createElement("span");
     fuelRange.classList.add("fuelRange");
     if ((this.config.showFuelRange) && (info.fuelRange != '')) {
-      fuelRange.appendChild(this.faIconFactory("fa-gas-pump"));
+      if(info.fuelRange<this.config.fuelRangeCritical)
+        fuelRange.appendChild(this.faIconFactory("fa-gas-pump","red"));
+      else
+        if(info.fuelRange<this.config.fuelRangeWarning)
+          fuelRange.appendChild(this.faIconFactory("fa-gas-pump","orange"));
+        else
+          fuelRange.appendChild(this.faIconFactory("fa-gas-pump"));
       fuelRange.appendChild(document.createTextNode(info.fuelRange + (this.config.useUSUnits ? ' mi' : ' km')));
     } else {
       fuelRange.appendChild(document.createTextNode("\u00a0"));

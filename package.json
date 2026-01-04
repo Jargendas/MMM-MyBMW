@@ -8,13 +8,13 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "preinstall": "echo 'Installing Python Dependencies...' && pip install -r requirements.txt --no-warn-script-location"
+    "start": "node index.js"
   },
   "author": "Jonathan Andree",
   "license": "MIT",
   "dependencies": {
     "fs": "0.0.1-security",
+    "image-downloader": "^4.3.0",
     "moment": "^2.24.0",
     "node-fetch": "^2.6.7",
     "qs": "^6.7.0"

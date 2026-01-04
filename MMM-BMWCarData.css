@@ -1,4 +1,4 @@
-.MMM-MyBMW .bmw-container {
+.MMM-BMWCarData .bmw-container {
   width: 280px;
   line-height: 1.50;
   font-size: 20px;
@@ -7,45 +7,45 @@
   text-align: left;
 }
 
-.MMM-MyBMW .bmw-container img {
+.MMM-BMWCarData .bmw-container img {
   position: absolute;
   width: auto;
   height: auto;
   max-width: 220px;
-  max-height: 95px;
-  top: 35px;
+  max-height: 130px;
+  top: 0px;
   left: 50%;
   transform: translate(-50%, 0%);
 }
 
-.MMM-MyBMW .bmw-container .fas {
+.MMM-BMWCarData .bmw-container .fas {
   width: 30px;
   text-align: center;
 }
 
-.MMM-MyBMW .bmw-container .locked {
+.MMM-BMWCarData .bmw-container .locked {
   width: 30px;
 }
 
-.MMM-MyBMW .bmw-container .plugged {
+.MMM-BMWCarData .bmw-container .plugged {
   margin-left: -3px;
   margin-right: -3px;
 }
 
-.MMM-MyBMW .bmw-container .mileage {
+.MMM-BMWCarData .bmw-container .mileage {
   float: right;
 }
 
-.MMM-MyBMW .bmw-container .fuelRange {
+.MMM-BMWCarData .bmw-container .fuelRange {
   float: right;
 }
 
-.MMM-MyBMW .bmw-container .updated {
+.MMM-BMWCarData .bmw-container .updated {
   font: 16px, Sans-Serif;
   white-space: nowrap;
   margin-left: -3px;
 }
 
-.MMM-MyBMW .bmw-container.spacer {
+.MMM-BMWCarData .bmw-container.spacer {
   height: 50px;
 }
